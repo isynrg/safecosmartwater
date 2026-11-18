@@ -1,4 +1,4 @@
-/* SafeCo SmartWater — Proposal Studio
+/* SafeCo SmartWater System
  * Single-page app. No build step. Data is stored on the device (localStorage).
  * Routes:
  *   #/                 pipeline board

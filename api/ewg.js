@@ -7,7 +7,7 @@
 const { parse, htmlToText } = require("../js/ewg-parse.js");
 const SC = require("../js/data.js");
 
-const HEADERS = { "user-agent": "Mozilla/5.0 (compatible; SafeCoProposalStudio/1.0)", accept: "text/html" };
+const HEADERS = { "user-agent": "Mozilla/5.0 (compatible; SafeCoSmartWaterSystem/1.0)", accept: "text/html" };
 const BASE = "https://www.ewg.org/tapwater/";
 
 function parseSystems(html) {

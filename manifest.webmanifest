@@ -1,6 +1,6 @@
 {
-  "name": "SafeCo SmartWater Proposal Studio",
-  "short_name": "SafeCo Proposals",
+  "name": "SafeCo SmartWater System",
+  "short_name": "SafeCo SmartWater",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#071326",

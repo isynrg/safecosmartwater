@@ -1,5 +1,5 @@
 /* Offline support: the app keeps working in basements and well houses. */
-const CACHE = "safeco-proposals-v2";
+const CACHE = "safeco-proposals-v3";
 const SHELL = [
   "./", "index.html", "css/styles.css", "js/data.js", "js/ewg-parse.js", "js/app.js",
   "assets/logo.png", "assets/system.jpg", "assets/product-sheet.jpg", "assets/icon-192.png", "assets/icon-512.png",

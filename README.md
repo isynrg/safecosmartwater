@@ -1,4 +1,4 @@
-# SafeCo SmartWater — Proposal Studio
+# SafeCo SmartWater System
 
 A guided water-treatment proposal tool for SafeCo SmartWater Systems sales reps. Run it on a tablet at the kitchen table, or send it as a link so the homeowner can walk it on their phone and sign remotely.
 

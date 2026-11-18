@@ -1,4 +1,4 @@
-/* SafeCo SmartWater Proposal Studio — default data.
+/* SafeCo SmartWater System — default data.
  * Everything here is a DEFAULT. Owners can change products, prices, red lines,
  * financing and company info from Settings; those edits are stored on the device.
  */
