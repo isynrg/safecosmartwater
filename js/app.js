@@ -214,6 +214,7 @@
 
   /* ---------- steps ---------- */
   const STEPS = [
+    { id: "cover", title: "Cover", icon: "star" },
     { id: "welcome", title: "Welcome", icon: "home" },
     { id: "customer", title: "Homeowner", icon: "user", rep: true },
     { id: "water", title: "Your Water", icon: "drop" },
@@ -246,13 +247,13 @@
         mode = "client"; document.body.classList.add("client");
         if (!clientP) { view.innerHTML = emptyClient(); renderTop(); return; }
         if (parts[1] === "doc") return renderDoc(clientP);
-        return renderProposal(clientP, parts[1] || "welcome");
+        return renderProposal(clientP, parts[1] || "cover");
       }
       mode = "rep";
       if (parts[0] === "p") {
         const p = findP(parts[1]);
         if (!p) { toast("Proposal not found"); return go("#/"); }
-        return renderProposal(p, parts[2] || "welcome");
+        return renderProposal(p, parts[2] || "cover");
       }
       if (parts[0] === "doc") { const p = findP(parts[1]); if (!p) return go("#/"); return renderDoc(p); }
       if (parts[0] === "settings") return renderSettings();
@@ -265,7 +266,7 @@
     const top = $("#topbar");
     const c = (mode === "client" && clientP && clientP.snap ? clientP.snap.company : settings.company);
     if (mode === "client") {
-      top.innerHTML = `<a class="brand" href="#/c/welcome"><img src="assets/logo.png" alt="SafeCo SmartWater Systems"></a>
+      top.innerHTML = `<a class="brand" href="#/c/cover"><img src="assets/logo.png" alt="SafeCo SmartWater Systems"></a>
         <div class="top-right"><a class="top-phone" href="tel:${esc(c.phone.replace(/[^\d+]/g, ""))}">${ic("phone")}<span>${esc(c.phone)}</span></a></div>`;
       return;
     }
@@ -430,6 +431,45 @@
     redline: (p, el) => redlineMsg(p, el),
   };
   function updateLive(p) { $$("[data-live]").forEach((el) => { const f = LIVE[el.dataset.live]; if (f) el.innerHTML = f(p, el); }); }
+
+  /* ======================================================================
+   * STEP: COVER
+   * ==================================================================== */
+  function stepCover(p) {
+    const c = S(p).company, cu = p.customer;
+    const names = cu.name ? esc(cu.name) + (cu.co ? " &amp; " + esc(cu.co) : "") : "Valued Homeowner";
+    const addr = [cu.address, [cu.city, cu.state].filter(Boolean).join(", "), cu.zip].filter(Boolean).join(" · ");
+    const next = mode === "client" ? "#/c/welcome" : `#/p/${p.id}/welcome`;
+    return `<section class="cover">
+      <div class="cover-glow" aria-hidden="true"></div>
+      <div class="cover-top">
+        <img class="cover-logo" src="assets/logo.png" alt="SafeCo SmartWater Systems">
+        <div class="cover-rule"><span></span><b>Premium Equipment · Professional Installation · Better Water. Better Living.</b><span></span></div>
+      </div>
+      <div class="cover-main">
+        <div class="cover-text">
+          <div class="cover-kicker">Water Quality &amp; Treatment Proposal</div>
+          <h1 class="cover-title">Clean, soft water<br>for every tap in your home.</h1>
+          <div class="cover-for">
+            <small>Prepared exclusively for</small>
+            <b>${names}</b>
+            ${addr ? `<span>${esc(addr)}</span>` : ""}
+          </div>
+          <dl class="cover-meta">
+            <div><dt>Date</dt><dd>${esc(fmtDate(p.created) || today())}</dd></div>
+            <div><dt>Water specialist</dt><dd>${esc(p.rep || c.salesOrg)}</dd></div>
+            <div><dt>Proposal #</dt><dd>${esc(p.order)}</dd></div>
+          </dl>
+          <a class="btn lg cyan" href="${next}">Begin presentation ${ic("next")}</a>
+        </div>
+        <div class="cover-img"><img src="assets/system.jpg" alt="SafeCo Complete Home Softener &amp; Filtration System"></div>
+      </div>
+      <div class="cover-foot">
+        <div class="cover-badges">${SC.ABOUT.badges.map((b) => `<span>${esc(b)}</span>`).join("")}</div>
+        <div class="cover-contact"><span>${ic("phone")} ${esc(c.phone)}</span><span>${esc(c.website)}</span><span>${esc(c.address)}</span></div>
+      </div>
+    </section>`;
+  }
 
   /* ======================================================================
    * STEP: WELCOME
@@ -1241,7 +1281,7 @@
       const incoming = data.p; incoming.snap = data.snap;
       if (!clientP || clientP.id !== incoming.id || !clientP.signedAt) clientP = incoming;
       LS.set("sc_client", clientP);
-      history.replaceState(null, "", baseUrl() + "#/c/welcome");
+      history.replaceState(null, "", baseUrl() + "#/c/cover");
     } catch (e) { $("#view").innerHTML = emptyClient("This proposal link looks incomplete. Ask your SafeCo specialist to resend it."); return; }
     route();
   }
@@ -1340,7 +1380,7 @@
   /* ======================================================================
    * EVENTS
    * ==================================================================== */
-  const STEP_RENDER = { welcome: stepWelcome, customer: stepCustomer, water: stepWater, learn: stepLearn, build: stepBuild, options: stepOptions, savings: stepSavings, payment: stepPayment, sign: stepSign };
+  const STEP_RENDER = { cover: stepCover, welcome: stepWelcome, customer: stepCustomer, water: stepWater, learn: stepLearn, build: stepBuild, options: stepOptions, savings: stepSavings, payment: stepPayment, sign: stepSign };
   const STEP_AFTER = {};
   const rerender = () => current && renderProposal(current.p, current.step);
 
@@ -1400,8 +1440,8 @@
     if (!a || a.tagName === "SELECT" || (a.tagName === "INPUT" && a.type !== "button")) return;
     const act = a.dataset.act, p = current && current.p;
     switch (act) {
-      case "open": if (e.target.closest("select")) return; return go(`#/p/${a.dataset.id}/welcome`);
-      case "demo": { const d = demoProposal(); proposals.unshift(d); persistNow(); return go(`#/p/${d.id}/welcome`); }
+      case "open": if (e.target.closest("select")) return; return go(`#/p/${a.dataset.id}/cover`);
+      case "demo": { const d = demoProposal(); proposals.unshift(d); persistNow(); return go(`#/p/${d.id}/cover`); }
       case "present": {
         presenting = true; if (p.status === "draft") { p.status = "presented"; log(p, "Presented"); persistNow(); }
         try { await document.documentElement.requestFullscreen(); } catch (_) {}
