@@ -55,6 +55,7 @@
     upload: "M4 17v3h16v-3M12 16V3M7 8l5-5 5 5", star: "M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z",
     alert: "M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z",
     lock: "M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4", link: "M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7",
+    music: "M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM21 16a3 3 0 1 1-6 0 3 3 0 0 1 6 0z", pause: "M6 4h4v16H6zM14 4h4v16h-4z",
     paste: "M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M9 2h6v4H9z",
   };
   const ic = (n, cls = "") => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true"><path d="${ICONS[n] || ""}"/></svg>`;
@@ -432,6 +433,23 @@
   };
   function updateLive(p) { $$("[data-live]").forEach((el) => { const f = LIVE[el.dataset.live]; if (f) el.innerHTML = f(p, el); }); }
 
+  /* ---------- media ---------- */
+  function mediaCard(m) {
+    const v = m.ambient
+      ? `<video src="${m.src}" poster="${m.poster}" autoplay muted loop playsinline preload="metadata"></video>`
+      : `<video src="${m.src}" poster="${m.poster}" controls playsinline preload="none"></video>`;
+    return `<figure class="mcard ${m.tall ? "tall" : ""}">${v}<figcaption><b>${esc(m.title)}</b><span>${esc(m.sub)}</span></figcaption></figure>`;
+  }
+  let scoreOn = false, scoreEl = null;
+  function toggleScore() {
+    if (!scoreEl) { scoreEl = new Audio("assets/media/score.mp3"); scoreEl.loop = true; scoreEl.volume = 0.55; }
+    scoreOn = !scoreOn;
+    if (scoreOn) scoreEl.play().catch(() => { scoreOn = false; toast("Tap again to play music"); });
+    else scoreEl.pause();
+    const b = $(".cover-sound");
+    if (b) { b.setAttribute("aria-pressed", String(scoreOn)); b.innerHTML = `${ic(scoreOn ? "pause" : "music")}<span>${scoreOn ? "Music on" : "Play music"}</span>`; }
+  }
+
   /* ======================================================================
    * STEP: COVER
    * ==================================================================== */
@@ -441,7 +459,9 @@
     const addr = [cu.address, [cu.city, cu.state].filter(Boolean).join(", "), cu.zip].filter(Boolean).join(" · ");
     const next = mode === "client" ? "#/c/welcome" : `#/p/${p.id}/welcome`;
     return `<section class="cover">
+      <video class="cover-film" src="assets/media/cover-film.mp4" poster="assets/media/cover-film.jpg" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
       <div class="cover-glow" aria-hidden="true"></div>
+      <button class="cover-sound" data-act="score" aria-pressed="${scoreOn ? "true" : "false"}">${ic(scoreOn ? "pause" : "music")}<span>${scoreOn ? "Music on" : "Play music"}</span></button>
       <div class="cover-top">
         <img class="cover-logo" src="assets/logo.png" alt="SafeCo SmartWater Systems">
         <div class="cover-rule"><span></span><b>Premium Equipment · Professional Installation · Better Water. Better Living.</b><span></span></div>
@@ -449,7 +469,7 @@
       <div class="cover-main">
         <div class="cover-text">
           <div class="cover-kicker">Water Quality &amp; Treatment Proposal</div>
-          <h1 class="cover-title">Clean, soft water<br>for every tap in your home.</h1>
+          <h1 class="cover-title">Clean, soft water for every tap in your home.</h1>
           <div class="cover-for">
             <small>Prepared exclusively for</small>
             <b>${names}</b>
@@ -492,6 +512,11 @@
           ${mode === "client" ? `<a class="btn lg cyan" href="#/c/water">Start my walkthrough ${ic("next")}</a>` : ""}
         </div>
         <div class="hero-img"><img src="assets/system.jpg" alt="SafeCo Complete Home Softener & Filtration System"></div>
+      </section>
+      <section class="media-row">
+        ${mediaCard({ src: "assets/media/safeco-spot.mp4", poster: "assets/media/safeco-spot.jpg", title: "Meet SafeCo SmartWater", sub: "Clean, soft water, from the tap to the glass", tall: true })}
+        ${mediaCard({ src: "assets/media/install.mp4", poster: "assets/media/install.jpg", title: "Professional installation", sub: "Trained SafeCo installers set up, test and calibrate every system", tall: true, ambient: true })}
+        <figure class="mcard life"><img src="assets/media/kitchen.jpg" alt="A bright Texas family kitchen" loading="lazy"><figcaption><b>Every tap in your home</b><span>Soft water for showers, laundry and dishes. Pure, mineral-rich drinking water at the kitchen sink.</span></figcaption></figure>
       </section>
       <section class="pillars">
         ${SC.ABOUT.pillars.map((x) => `<div class="pillar"><span class="pill-ic">${ic(PILLAR_ICON[x.icon])}</span><b>${esc(x.title)}</b><p>${esc(x.text)}</p></div>`).join("")}
@@ -585,6 +610,11 @@
     const contams = (p.area.contaminants || []).map((c) => ({ ...c, f: contamFactor(c) })).sort((a, b) => (b.f || 0) - (a.f || 0));
     const above = contams.filter((c) => c.f != null && c.f > 1).length;
     return `${stepHead(`Water test${zip ? " · ZIP " + esc(zip) : ""}`, `${p.customer.name ? esc(p.customer.name.split(" ")[0]) + "’s" : "Your"} water test results`, "Your in-home test sits on top of the public water-quality report for your address — published utility data, not a sales claim.")}
+      <section class="water-open">
+        ${mediaCard({ src: "assets/media/family-story.mp4", poster: "assets/media/family-story.jpg", title: "What's really in your water?", sub: "30 seconds · sound on", tall: true })}
+        <figure class="mcard glass"><img src="assets/media/glass-compare.jpg" alt="Two glasses of water side by side: one cloudy, one crystal clear" loading="lazy">
+          <figcaption><b>Clear isn't the same as clean</b><span>Hardness minerals, chlorine by-products and dissolved solids are often invisible. Your test results below show what's actually in your water. <em>Illustration.</em></span></figcaption></figure>
+      </section>
       <div class="card">
         <div class="card-head"><div><div class="eyebrow">Your in-home test</div><div data-live="testSummary">${testSummary(p)}</div></div></div>
         <div class="tests">
@@ -1451,6 +1481,7 @@
       case "share": return shareProposal(p);
       case "send-back": return sendBack(p);
       case "print": return window.print();
+      case "score": return toggleScore();
       case "ewg-pull": return ewgPull(p);
       case "ewg-paste": return ewgPaste(p);
       case "contam-add": return contamAdd(p);
@@ -1529,6 +1560,18 @@
   document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && presenting) { presenting = false; rerender(); } });
   document.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.classList && e.target.classList.contains("deal")) e.target.click(); });
 
+  // one sound at a time: a narrated video pauses the music and any other video
+  document.addEventListener("play", (e) => {
+    const v = e.target;
+    if (!(v instanceof HTMLVideoElement) || !v.controls) return;
+    if (scoreOn) toggleScore();
+    $$("video[controls]").forEach((o) => { if (o !== v) o.pause(); });
+    const card = v.closest(".mcard"); if (card) card.classList.add("playing");
+  }, true);
+  document.addEventListener("pause", (e) => {
+    const card = e.target.closest && e.target.closest(".mcard");
+    if (card) card.classList.toggle("playing", false);
+  }, true);
   window.addEventListener("hashchange", route);
   window.addEventListener("beforeunload", persistNow);
   route();
