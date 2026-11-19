@@ -65,16 +65,24 @@
     get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { toast("Couldn't save on this device — storage is full or blocked."); return false; } },
   };
+  // Pricing (js/pricing.js) only loads for signed-in team members; homeowners get public defaults.
+  const DEF = SC.DEFAULTS || Object.assign({ settingsPin: "", taxRate: 0, installFee: 0, depositPct: 0, reps: [], products: [], addons: [], financePlans: [], optionPresets: [] }, clone(SC.PUBLIC_DEFAULTS || {}));
   function mergeDefaults(s) {
-    const d = clone(SC.DEFAULTS);
+    const d = clone(DEF);
     if (!s) return d;
     const out = Object.assign(d, s);
-    out.company = Object.assign(clone(SC.DEFAULTS.company), s.company || {});
-    out.savings = Object.assign(clone(SC.DEFAULTS.savings), s.savings || {});
+    out.company = Object.assign(clone(DEF.company), s.company || {});
+    out.savings = Object.assign(clone(DEF.savings), s.savings || {});
     return out;
   }
   let settings = mergeDefaults(LS.get("sc_settings", null));
-  let proposals = LS.get("sc_proposals", []);
+  /* ---------- who is signed in ---------- */
+  const IS_VIEW = /^\/view/.test(location.pathname);          // homeowner proposal view (public)
+  const HOSTED = location.protocol.startsWith("http");
+  let me = null;                                                // { id, name, email, role }
+  const isOwner = () => !me || me.role === "owner";             // no sign-in system (local file) = full access
+  let PKEY = "sc_proposals";                                     // each team member gets their own pipeline on a shared tablet
+  let proposals = [];
   let clientP = LS.get("sc_client", null); // homeowner copy of a shared proposal
   let mode = "rep"; // "rep" | "client"
   let saveTimer = null;
@@ -82,9 +90,9 @@
   function persist(p) {
     if (p) p.updated = Date.now();
     clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => { if (mode === "client") LS.set("sc_client", clientP); else LS.set("sc_proposals", proposals); }, 150);
+    saveTimer = setTimeout(() => { if (mode === "client") LS.set("sc_client", clientP); else LS.set(PKEY, proposals); }, 150);
   }
-  function persistNow() { clearTimeout(saveTimer); if (mode === "client") LS.set("sc_client", clientP); else LS.set("sc_proposals", proposals); }
+  function persistNow() { clearTimeout(saveTimer); if (mode === "client") LS.set("sc_client", clientP); else LS.set(PKEY, proposals); }
 
   /* settings used to price a proposal: live settings for reps, the shared snapshot for homeowners */
   const S = (p) => (mode === "client" && p && p.snap ? p.snap : settings);
@@ -104,7 +112,7 @@
     let chosen = opts.findIndex((o) => o.recommended); if (chosen < 0) chosen = opts.length - 1;
     const best = bestPlan(settings.financePlans);
     return {
-      id: uid(), order: orderNo(), status: "draft", created: Date.now(), updated: Date.now(), rep: settings.reps[0] || "",
+      id: uid(), order: orderNo(), status: "draft", created: Date.now(), updated: Date.now(), rep: (me && me.name) || settings.reps[0] || "",
       customer: { name: "", co: "", phone: "", email: "", address: "", city: "", state: "TX", zip: "" },
       test: { hardness: null, chlorine: null, tds: null, iron: null, ph: null, notes: "" },
       area: { zip: "", utility: "", served: "", source: "", url: "", pws: "", contaminants: [], pulledAt: null },
@@ -212,6 +220,8 @@
     return JSON.parse(new TextDecoder().decode(bytes));
   }
   const baseUrl = () => location.href.split("#")[0];
+  const viewUrl = () => (HOSTED ? location.origin + "/view" : baseUrl());
+  const repUrl = () => (HOSTED ? location.origin + "/" : baseUrl());
 
   /* ---------- steps ---------- */
   const STEPS = [
@@ -235,7 +245,8 @@
   function findP(id) { return proposals.find((x) => x.id === id); }
 
   async function route() {
-    const parts = (location.hash.slice(1) || "/").split("/").filter(Boolean);
+    let parts = (location.hash.slice(1) || "/").split("/").filter(Boolean);
+    if (IS_VIEW && parts[0] !== "share" && parts[0] !== "c") parts = ["c"].concat(parts[0] === "doc" ? ["doc"] : []);
     const view = $("#view");
     document.body.classList.remove("client", "doc-mode");
     $$(".modal-back").forEach((m) => m.parentNode.removeChild(m));
@@ -257,7 +268,7 @@
         return renderProposal(p, parts[2] || "cover");
       }
       if (parts[0] === "doc") { const p = findP(parts[1]); if (!p) return go("#/"); return renderDoc(p); }
-      if (parts[0] === "settings") return renderSettings();
+      if (parts[0] === "settings") { teamLoaded = false; return renderSettings(); }
       if (parts[0] === "new") { const p = newProposal(); proposals.unshift(p); persistNow(); return go(`#/p/${p.id}/customer`); }
       return renderPipeline();
     } finally { renderTop(); }
@@ -276,8 +287,9 @@
       <nav class="topnav">
         <a href="#/" class="${h === "" || h === "#/" ? "on" : ""}">${ic("grid")}<span>Pipeline</span></a>
         <a href="#/new">${ic("plus")}<span>New proposal</span></a>
-        <a href="#/settings" class="${h.startsWith("#/settings") ? "on" : ""}">${ic("gear")}<span>Settings</span></a>
-      </nav>`;
+        ${isOwner() ? `<a href="#/settings" class="${h.startsWith("#/settings") ? "on" : ""}">${ic("gear")}<span>Settings</span></a>` : ""}
+      </nav>
+      ${me ? `<div class="who"><span class="avatar">${esc(initialsOf(me.name))}</span><span class="who-name"><b>${esc(me.name)}</b><small>${me.role === "owner" ? "Owner" : "Sales rep"}</small></span><button class="btn ghost sm" data-act="signout">Sign out</button></div>` : ""}`;
   }
 
   /* ======================================================================
@@ -364,7 +376,7 @@
         { name: "Chromium (hexavalent)", value: 0.11, unit: "ppb", factor: null },
         { name: "Nitrate", value: 0.5, unit: "ppm", factor: null },
       ] });
-    p.rep = settings.reps[0] || "Sales Rep";
+    p.rep = (me && me.name) || settings.reps[0] || "Sales Rep";
     log(p, "Sample data loaded — replace with the homeowner's real report");
     return p;
   }
@@ -554,6 +566,10 @@
     else input = `<input type="${type}" value="${esc(v == null ? "" : v)}" ${attrs}>`;
     return `<label class="field ${opts.cls || ""}"><span>${label}</span>${input}</label>`;
   }
+  function repOptions(p) {
+    const list = [p.rep, me && me.name].concat(settings.reps).concat(team.map((u) => u.name)).filter(Boolean);
+    return list.filter((x, i) => list.indexOf(x) === i).concat(list.length ? [] : [""]);
+  }
   function stepCustomer(p) {
     const c = p.customer;
     const tel = (c.phone || "").replace(/[^\d+]/g, "");
@@ -574,7 +590,7 @@
         <div class="card">
           <h3>Deal</h3>
           <div class="fgrid">
-            ${field("Sales representative", "rep", { select: settings.reps.length ? settings.reps : [""] })}
+            ${field("Sales representative", "rep", { select: repOptions(p) })}
             ${field("Status", "status", { select: COLUMNS.map((c) => [c.id, c.title]) })}
             ${field("Project / order #", "order")}
             ${field("Sales organization", "salesOrg", { placeholder: settings.company.salesOrg })}
@@ -1288,7 +1304,7 @@
     pub.options.forEach((o) => o.items.forEach((i) => { delete i.redLine; delete i.image; }));
     delete pub.history;
     if (!pub.signedAt) { pub.sigs = {}; pub.initials = {}; }
-    const link = baseUrl() + "#/share/" + (await encode({ v: 1, p: pub, snap: snapshot() }));
+    const link = viewUrl() + "#/share/" + (await encode({ v: 1, p: pub, snap: snapshot() }));
     if (["draft", "presented"].includes(p.status)) { p.status = "sent"; }
     log(p, "Proposal link created"); persistNow();
     const first = (p.customer.name || "").split(" ")[0] || "there";
@@ -1319,7 +1335,7 @@
     return `<section class="page"><div class="empty card"><img src="assets/logo.png" alt="" style="max-width:320px;background:#081427;padding:16px;border-radius:12px"><h2>${esc(msg || "No proposal on this device yet")}</h2><p>Open the link your SafeCo specialist sent you.</p><a class="btn ghost" href="#/">I'm a SafeCo rep</a></div></section>`;
   }
   async function sendBack(p) {
-    const link = baseUrl() + "#/return/" + (await encode({ v: 1, p }));
+    const link = repUrl() + "#/return/" + (await encode({ v: 1, p }));
     const c = S(p).company;
     const body = `Signed SafeCo agreement from ${p.customer.name} (order ${p.order}). Open this link to import it: ${link}`;
     modal(`<h3>Send your signed copy to SafeCo</h3><p class="muted">Send this link to your specialist so the signed agreement lands in their system. Also download a PDF copy for your records.</p>
@@ -1356,6 +1372,11 @@
    * ==================================================================== */
   let unlocked = sessionStorage.getItem("sc_unlocked") === "1";
   function renderSettings() {
+    if (me && me.role !== "owner") {
+      $("#view").innerHTML = `<section class="page narrow"><div class="card center-card">${ic("lock", "lg")}<h2>Owners only</h2><p class="muted">Pricing, financing and the team list are managed by an owner. Ask your manager if something needs to change.</p><a class="btn" href="#/">Back to proposals</a></div></section>`;
+      return;
+    }
+    if (me) unlocked = true; // signed-in owners skip the PIN
     if (!unlocked) {
       $("#view").innerHTML = `<section class="page narrow"><div class="card center-card">${ic("lock", "lg")}<h2>Owner settings</h2><p class="muted">Pricing, red lines and financing are protected. Enter the owner PIN.</p>
         <div class="row gap center"><input id="pin" type="password" inputmode="numeric" placeholder="PIN" class="pin"><button class="btn" data-act="unlock">Unlock</button></div><p class="muted small">Default PIN is 1234 — change it once you're in.</p></div></section>`;
@@ -1366,7 +1387,8 @@
     const inp = (path, opts = {}) => { const v = getPath(s, path); return `<input ${opts.type ? `type="${opts.type}"` : ""} value="${esc(v == null ? "" : v)}" data-sbind="${path}" ${opts.type === "number" ? 'data-num="1" step="any"' : ""} ${opts.ph ? `placeholder="${esc(opts.ph)}"` : ""}>`; };
     const INC = [["softener", "Softener"], ["carbon", "Carbon"], ["ro", "RO"], ["alkaline", "Alkaline"]];
     $("#view").innerHTML = `<section class="page">
-      <div class="page-head"><div><div class="eyebrow">Owner</div><h1>Settings</h1></div><div class="row gap"><button class="btn ghost" data-act="lock">${ic("lock")} Lock</button></div></div>
+      <div class="page-head"><div><div class="eyebrow">Owner</div><h1>Settings</h1></div><div class="row gap">${me ? "" : `<button class="btn ghost" data-act="lock">${ic("lock")} Lock</button>`}</div></div>
+      ${me ? `<div id="teamArea">${teamHTML()}</div>` : ""}
 
       <div class="card"><h3>Products & red-line pricing</h3><p class="muted small">Reps can't quote a product below its red line.</p>
         <div class="table-wrap"><table class="tbl"><thead><tr><th>Name</th><th>Category</th><th>Short description</th><th>Retail $</th><th>Red line $</th><th>Includes</th><th></th></tr></thead><tbody>
@@ -1410,6 +1432,124 @@
   /* ======================================================================
    * EVENTS
    * ==================================================================== */
+  /* ======================================================================
+   * SIGN-IN, TEAM & SIGN-IN SHEET
+   * ==================================================================== */
+  let team = [], sheet = [], sheetFilter = "all", teamLoaded = false;
+  async function api(path, opts = {}) {
+    const r = await fetch(path, Object.assign({ credentials: "same-origin", headers: { "content-type": "application/json" } }, opts));
+    let j = {}; try { j = await r.json(); } catch (_) {}
+    if (r.status === 401 && path !== "/api/auth/me") { toLogin(); throw new Error("signed out"); }
+    if (!r.ok) throw new Error(j.error || "Something went wrong. Try again.");
+    return j;
+  }
+  function toLogin() {
+    const nextPath = location.pathname + location.hash;
+    location.replace("/login?next=" + encodeURIComponent(nextPath));
+  }
+  function useAccount(u) {
+    me = u;
+    LS.set("sc_me", u);
+    PKEY = "sc_proposals:" + u.id;
+    let mine = LS.get(PKEY, null);
+    if (!mine) { // first sign-in on this device: hand over proposals saved before sign-in existed
+      mine = LS.get("sc_proposals", []);
+      try { localStorage.removeItem("sc_proposals"); } catch (_) {}
+      LS.set(PKEY, mine);
+    }
+    proposals = mine;
+  }
+  async function boot() {
+    if (IS_VIEW || !HOSTED) { proposals = LS.get(PKEY, []); return route(); }
+    try {
+      const r = await fetch("/api/auth/me", { credentials: "same-origin", cache: "no-store" });
+      if (r.status === 401) return toLogin();
+      if (r.status === 404) { proposals = LS.get(PKEY, []); return route(); } // sign-in not deployed (local dev)
+      if (!r.ok) throw new Error("unavailable");
+      useAccount((await r.json()).user);
+    } catch (e) {
+      const cached = LS.get("sc_me", null);   // offline: keep working as the last person who signed in here
+      if (!cached) return toLogin();
+      useAccount(cached);
+      toast("Offline — working on this device until you're back online.");
+    }
+    route();
+  }
+  async function signOut() {
+    persistNow();
+    try { await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" }); } catch (_) {}
+    try { localStorage.removeItem("sc_me"); sessionStorage.removeItem("sc_unlocked"); } catch (_) {}
+    location.replace("/login");
+  }
+
+  const EVENT_LABEL = { login: ["Signed in", "good"], logout: ["Signed out", ""], failed: ["Failed sign-in", "bad"], locked: ["Locked out", "bad"], "user-added": ["Added to team", "cyan"], "user-updated": ["Account changed", "cyan"], "user-removed": ["Removed from team", ""], "password-reset": ["Password reset", "cyan"] };
+  const fmtWhen = (t) => new Date(t).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  async function loadTeam() {
+    try {
+      const [u, l] = await Promise.all([api("/api/auth/users"), api("/api/auth/log?months=3")]);
+      team = u.users; sheet = l.events; teamLoaded = true;
+    } catch (e) { if (e.message !== "signed out") toast(e.message, "bad"); }
+    const area = $("#teamArea"); if (area) area.innerHTML = teamHTML();
+  }
+  function teamHTML() {
+    if (!teamLoaded) { setTimeout(loadTeam, 0); return `<div class="card"><h3>Team & sign-in sheet</h3><p class="muted"><span class="spin dark"></span> Loading…</p></div>`; }
+    const rows = sheet.filter((e) => sheetFilter === "all" || (sheetFilter === "logins" ? e.type === "login" || e.type === "logout" : sheetFilter === "failed" ? e.type === "failed" || e.type === "locked" : !["login", "logout", "failed", "locked"].includes(e.type)));
+    const today = new Date().toDateString();
+    const todays = sheet.filter((e) => e.type === "login" && new Date(e.t).toDateString() === today);
+    const failsToday = sheet.filter((e) => (e.type === "failed" || e.type === "locked") && new Date(e.t).toDateString() === today).length;
+    return `
+      <div class="card">
+        <div class="card-head"><div><div class="eyebrow">Who can sign in</div><h3>Team</h3></div>
+          <button class="btn sm" data-act="team-add">${ic("plus")} Add team member</button></div>
+        <div class="table-wrap"><table class="tbl team">
+          <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Last sign-in</th><th></th></tr></thead>
+          <tbody>${team.map((u) => `<tr class="${u.active ? "" : "off"}">
+            <td><span class="avatar">${esc(initialsOf(u.name))}</span> <b>${esc(u.name)}</b>${me && u.id === me.id ? ` <span class="tag">You</span>` : ""}</td>
+            <td>${esc(u.email)}</td>
+            <td><select class="mini" data-act-change="team-role" data-id="${u.id}"><option value="rep" ${u.role === "rep" ? "selected" : ""}>Sales rep</option><option value="owner" ${u.role === "owner" ? "selected" : ""}>Owner</option></select></td>
+            <td>${u.active ? `<span class="tag good">Active</span>` : `<span class="tag">Turned off</span>`}</td>
+            <td class="muted">${u.lastLogin ? esc(fmtWhen(u.lastLogin)) : "Never"}</td>
+            <td class="actions"><button class="btn ghost sm" data-act="team-pw" data-id="${u.id}">Reset password</button>
+              <button class="btn ghost sm" data-act="team-toggle" data-id="${u.id}">${u.active ? "Turn off" : "Turn on"}</button>
+              ${me && u.id !== me.id ? `<button class="icon-btn" data-act="team-del" data-id="${u.id}" aria-label="Remove ${esc(u.name)}">${ic("trash")}</button>` : ""}</td></tr>`).join("")}</tbody></table></div>
+        <p class="muted small">Owners can change pricing and manage the team. Sales reps can build, present and send proposals. Turning someone off signs them out everywhere.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><div class="eyebrow">Last 3 months</div><h3>Sign-in sheet</h3></div>
+          <div class="row gap wrap">
+            <div class="seg">${[["all", "All"], ["logins", "Sign-ins"], ["failed", "Failed"], ["team", "Team changes"]].map(([k, l]) => `<button class="${sheetFilter === k ? "on" : ""}" data-act="sheet-filter" data-k="${k}">${l}</button>`).join("")}</div>
+            <button class="btn ghost sm" data-act="sheet-csv">${ic("download")} CSV</button>
+            <button class="btn ghost sm" data-act="sheet-refresh">Refresh</button>
+          </div></div>
+        <div class="sheet-sum"><span><b>${todays.length}</b> sign-ins today</span><span><b>${new Set(todays.map((e) => e.email || e.name)).size}</b> people</span><span class="${failsToday ? "bad-t" : ""}"><b>${failsToday}</b> failed today</span></div>
+        <div class="table-wrap"><table class="tbl sheet">
+          <thead><tr><th>When</th><th>Who</th><th>What</th><th>Device</th><th>Where</th></tr></thead>
+          <tbody>${rows.slice(0, 300).map((e) => { const [lab, cls] = EVENT_LABEL[e.type] || [e.type, ""]; return `<tr>
+            <td class="nowrap">${esc(fmtWhen(e.t))}</td>
+            <td><b>${esc(e.name || "—")}</b><small class="block muted">${esc(e.email || "")}</small></td>
+            <td><span class="tag ${cls}">${esc(lab)}</span>${e.note ? `<small class="block muted">${esc(e.note)}</small>` : ""}${e.by && e.by !== e.name ? `<small class="block muted">by ${esc(e.by)}</small>` : ""}</td>
+            <td>${esc(e.device || "")}</td><td class="muted">${esc(e.place || "")}</td></tr>`; }).join("") || `<tr><td colspan="5" class="muted">Nothing here yet.</td></tr>`}</tbody></table></div>
+      </div>`;
+  }
+  function teamForm(title, fields, submitLabel, onSubmit) {
+    const m = modal(`<h3>${esc(title)}</h3><form id="tf" class="fgrid" novalidate>${fields}</form><p class="bad-t small" id="tfErr"></p>
+      <div class="row end gap"><button class="btn ghost" data-close>Cancel</button><button class="btn" id="tfGo">${esc(submitLabel)}</button></div>`);
+    const go = async () => {
+      const f = m.el.querySelector("#tf"), data = Object.fromEntries(new FormData(f).entries());
+      const btn = m.el.querySelector("#tfGo"); btn.disabled = true;
+      try { const j = await onSubmit(data); if (j && j.users) team = j.users; m.close(); toast((j && j.message) || "Saved", "good"); loadTeam(); }
+      catch (e) { m.el.querySelector("#tfErr").textContent = e.message; btn.disabled = false; }
+    };
+    m.el.querySelector("#tfGo").onclick = go;
+    m.el.querySelector("#tf").addEventListener("submit", (e) => { e.preventDefault(); go(); });
+    const first = m.el.querySelector("input"); if (first) first.focus();
+  }
+  function newPassword() {
+    const a = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"; const r = new Uint32Array(10); crypto.getRandomValues(r);
+    return Array.from(r, (x) => a[x % a.length]).join("");
+  }
+  const post = (body) => api("/api/auth/users", { method: "POST", body: JSON.stringify(body) });
+
   const STEP_RENDER = { cover: stepCover, welcome: stepWelcome, customer: stepCustomer, water: stepWater, learn: stepLearn, build: stepBuild, options: stepOptions, savings: stepSavings, payment: stepPayment, sign: stepSign };
   const STEP_AFTER = {};
   const rerender = () => current && renderProposal(current.p, current.step);
@@ -1456,6 +1596,11 @@
       if (v === "__dup") { const d = clone(pr); d.id = uid(); d.order = orderNo(); d.status = "draft"; d.signedAt = null; d.sigs = {}; d.initials = {}; d.created = d.updated = Date.now(); d.history = [{ t: Date.now(), e: "Duplicated from " + pr.order }]; proposals.unshift(d); persistNow(); return renderPipeline(); }
       if (v === "__del") { confirmBox(`Delete the proposal for ${pr.customer.name || "this homeowner"}?`, "Delete").then((ok) => { if (ok) { proposals = proposals.filter((x) => x.id !== id); persistNow(); } renderPipeline(); }); return; }
       pr.status = v; log(pr, "Moved to " + v); pr.updated = Date.now(); persistNow(); return renderPipeline();
+    }
+    if (act === "team-role") {
+      const u = team.find((x) => x.id === el.dataset.id); if (!u) return;
+      post({ action: "update", id: u.id, role: el.value }).then((j) => { team = j.users; toast(`${u.name} is now ${el.value === "owner" ? "an owner" : "a sales rep"}`, "good"); loadTeam(); }).catch((e) => { toast(e.message, "bad"); loadTeam(); });
+      return;
     }
     if (act === "recommend") { p.options.forEach((o, i) => (o.recommended = el.checked && i === +el.dataset.i)); persist(p); return rerender(); }
     if (act === "addon") { const o = p.options[buildTab]; const id = el.dataset.id; o.addons = el.checked ? [...new Set([...o.addons, id])] : o.addons.filter((x) => x !== id); persist(p); return updateLive(p); }
@@ -1539,6 +1684,43 @@
         f.click(); return;
       }
       case "unlock": if ($("#pin").value === String(settings.settingsPin)) { unlocked = true; sessionStorage.setItem("sc_unlocked", "1"); renderSettings(); } else toast("Wrong PIN", "bad"); return;
+      case "signout": return signOut();
+      case "team-add": {
+        const pw = newPassword();
+        return teamForm("Add a team member", `
+          <label class="field span2"><span>Full name</span><input name="name" id="tfName" autocomplete="off" required></label>
+          <label class="field span2"><span>Email (their sign-in)</span><input name="email" id="tfEmail" type="email" autocomplete="off" required></label>
+          <label class="field"><span>Role</span><select name="role" id="tfRole"><option value="rep">Sales rep</option><option value="owner">Owner</option></select></label>
+          <label class="field"><span>Starting password</span><input name="password" id="tfPw" value="${pw}" autocomplete="off" required></label>
+          <p class="muted small span2">Give them this password in person or by text. They can't change it themselves yet, so you can reset it here any time.</p>`,
+          "Add to team", (d) => post(Object.assign({ action: "add" }, d)));
+      }
+      case "team-pw": {
+        const u = team.find((x) => x.id === a.dataset.id); if (!u) return;
+        return teamForm(`New password for ${u.name}`, `<label class="field span2"><span>New password</span><input name="password" id="tfPw2" value="${newPassword()}" autocomplete="off" required></label>
+          <p class="muted small span2">Share it with ${esc(u.name)} directly. Their old password stops working right away.</p>`,
+          "Set password", (d) => post({ action: "password", id: u.id, password: d.password }));
+      }
+      case "team-toggle": {
+        const u = team.find((x) => x.id === a.dataset.id); if (!u) return;
+        if (u.active && !(await confirmBox(`Turn off ${u.name}'s account? They'll be signed out and can't sign in until you turn it back on.`, "Turn off"))) return;
+        try { const j = await post({ action: "update", id: u.id, active: !u.active }); team = j.users; toast(u.active ? `${u.name} is turned off` : `${u.name} can sign in again`, "good"); loadTeam(); } catch (e) { toast(e.message, "bad"); }
+        return;
+      }
+      case "team-del": {
+        const u = team.find((x) => x.id === a.dataset.id); if (!u) return;
+        if (!(await confirmBox(`Remove ${u.name} from the team? Their sign-in history stays on the sheet.`, "Remove"))) return;
+        try { const j = await post({ action: "remove", id: u.id }); team = j.users; toast(j.message, "good"); loadTeam(); } catch (e) { toast(e.message, "bad"); }
+        return;
+      }
+      case "sheet-filter": sheetFilter = a.dataset.k; { const area = $("#teamArea"); if (area) area.innerHTML = teamHTML(); } return;
+      case "sheet-refresh": teamLoaded = true; return loadTeam();
+      case "sheet-csv": {
+        const q = (v) => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
+        const csv = [["When", "Name", "Email", "Event", "Note", "By", "Device", "Where", "IP"].join(",")].concat(sheet.map((e) => [new Date(e.t).toISOString(), e.name, e.email, (EVENT_LABEL[e.type] || [e.type])[0], e.note, e.by, e.device, e.place, e.ip].map(q).join(","))).join("\n");
+        const u = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); const l = document.createElement("a"); l.href = u; l.download = `safeco-sign-in-sheet-${new Date().toISOString().slice(0, 10)}.csv`; l.click(); setTimeout(() => URL.revokeObjectURL(u), 1000);
+        return;
+      }
       case "lock": unlocked = false; sessionStorage.removeItem("sc_unlocked"); return renderSettings();
       case "s-add": {
         const L = a.dataset.list;
@@ -1546,7 +1728,7 @@
         settings[L].push(blank); saveSettings(); return renderSettings();
       }
       case "s-del": settings[a.dataset.list].splice(+a.dataset.i, 1); saveSettings(); return renderSettings();
-      case "s-reset": if (await confirmBox("Reset products, pricing, financing and company info to the defaults?", "Reset")) { const pin = settings.settingsPin; settings = clone(SC.DEFAULTS); settings.settingsPin = pin; saveSettings(); renderSettings(); } return;
+      case "s-reset": if (await confirmBox("Reset products, pricing, financing and company info to the defaults?", "Reset")) { const pin = settings.settingsPin; settings = clone(DEF); settings.settingsPin = pin; saveSettings(); renderSettings(); } return;
     }
   });
 
@@ -1574,7 +1756,7 @@
   }, true);
   window.addEventListener("hashchange", route);
   window.addEventListener("beforeunload", persistNow);
-  route();
+  boot();
 
   if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(() => {});
 })();

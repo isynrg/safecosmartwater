@@ -1,0 +1,10 @@
+{
+  "name": "safecosmartwater",
+  "private": true,
+  "description": "SafeCo SmartWater System — guided water-treatment proposals",
+  "engines": { "node": "24.x" },
+  "dependencies": {
+    "@vercel/blob": "2.8.2",
+    "@vercel/functions": "3.10.5"
+  }
+}

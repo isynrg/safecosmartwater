@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sign in · SafeCo SmartWater System</title>
+  <meta name="theme-color" content="#071326">
+  <meta name="robots" content="noindex">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="login-page">
+  <video class="login-film" src="assets/media/cover-film.mp4" poster="assets/media/cover-film.jpg" autoplay muted loop playsinline aria-hidden="true"></video>
+  <div class="login-shade" aria-hidden="true"></div>
+  <main class="login-wrap">
+    <img class="login-logo" src="assets/logo.png" alt="SafeCo SmartWater Systems">
+    <section class="login-card" aria-labelledby="loginTitle">
+      <!-- sign in -->
+      <form id="signin" novalidate>
+        <div class="eyebrow">Team sign-in</div>
+        <h1 id="loginTitle">Welcome back</h1>
+        <p class="muted">Sign in to build, present and send water proposals.</p>
+        <label class="field"><span>Email</span><input id="email" name="email" type="email" autocomplete="username" inputmode="email" required></label>
+        <label class="field"><span>Password</span>
+          <div class="pw"><input id="password" name="password" type="password" autocomplete="current-password" required><button type="button" class="pw-show" data-show="password">Show</button></div></label>
+        <label class="check"><input id="remember" name="remember" type="checkbox" checked> Keep me signed in on this device for 30 days</label>
+        <p class="form-err" id="err" role="alert"></p>
+        <button class="btn lg block" id="go" type="submit">Sign in</button>
+        <p class="muted small center">Forgot your password? Ask your manager to reset it.</p>
+      </form>
+      <!-- first-time setup -->
+      <form id="setup" hidden novalidate>
+        <div class="eyebrow">First-time setup</div>
+        <h1>Create the owner account</h1>
+        <p class="muted">This only appears once. Enter the setup code you were given, then choose your sign-in. You'll add your sales reps from Settings.</p>
+        <label class="field"><span>Setup code</span><input id="code" name="code" autocomplete="off" required></label>
+        <label class="field"><span>Your name</span><input id="sname" name="name" autocomplete="name" required></label>
+        <label class="field"><span>Email</span><input id="semail" name="email" type="email" autocomplete="username" required></label>
+        <label class="field"><span>Password (8+ characters)</span>
+          <div class="pw"><input id="spassword" name="password" type="password" autocomplete="new-password" minlength="8" required><button type="button" class="pw-show" data-show="spassword">Show</button></div></label>
+        <p class="form-err" id="serr" role="alert"></p>
+        <button class="btn lg block" id="sgo" type="submit">Create owner account</button>
+      </form>
+    </section>
+    <p class="login-foot">SafeCo SmartWater Systems · (972) 472-2949 · www.safecopro.com</p>
+  </main>
+  <script src="js/login.js"></script>
+</body>
+</html>

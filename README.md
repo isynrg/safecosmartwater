@@ -41,6 +41,17 @@ It's a static site with no build step.
 - **Local server**: `python3 -m http.server 8080`, then open http://localhost:8080
 - **Deploy (recommended)**: push this repo to **Vercel**. Static files are served as-is, and `api/ewg.js` becomes the EWG function automatically. Any static host (Netlify, GitHub Pages, S3) works too, but without the function, reps use Paste report.
 
+## Sign-in
+
+The rep tool requires a team sign-in. Homeowner links (`/view`) stay public.
+
+- **First-time setup:** open the site, enter the one-time setup code (the `SETUP_CODE` environment variable in Vercel), and create the owner account.
+- **Team:** owners add sales reps, reset passwords, turn accounts off and change roles in **Settings → Team**.
+- **Sign-in sheet:** Settings shows every sign-in, sign-out, failed attempt, lockout and team change, with device and city. Download it as CSV.
+- After 5 wrong passwords an account is locked for 15 minutes (or until an owner resets the password).
+- Accounts and the sign-in sheet are stored in the project's private Vercel Blob store. Sessions last 12 hours, or 30 days with "keep me signed in".
+- Pricing and red lines (`js/pricing.js`) are only served to signed-in team members.
+
 ## Where data lives
 
 Proposals and settings are saved **in each device's browser** (localStorage). Nothing is sent to a server. A shared link carries its proposal inside the link itself. To move data between devices, use Backup / Restore. The settings PIN keeps reps out of pricing on a shared tablet. It is not real security.
