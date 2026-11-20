@@ -8,10 +8,11 @@ import { next } from "@vercel/functions";
 const PUBLIC = [
   /^\/login(\.html)?$/,
   /^\/view(\.html)?$/,
+  /^\/demo(\.html)?$/,
   /^\/api\/auth\/(login|setup|status|logout)$/,
   /^\/assets\//,
   /^\/css\//,
-  /^\/js\/(data|ewg-parse|app|login)\.js$/,
+  /^\/js\/(data|ewg-parse|app|login|landing|demo-link)\.js$/,
   /^\/(manifest\.webmanifest|sw\.js|favicon\.ico|robots\.txt)$/,
 ];
 

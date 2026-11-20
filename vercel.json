@@ -2,7 +2,8 @@
   "functions": { "api/ewg.js": { "includeFiles": "js/**" } },
   "rewrites": [
     { "source": "/login", "destination": "/login.html" },
-    { "source": "/view", "destination": "/index.html" }
+    { "source": "/view", "destination": "/index.html" },
+    { "source": "/demo", "destination": "/demo.html" }
   ],
   "headers": [
     { "source": "/sw.js", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] },
