@@ -1,7 +1,7 @@
 /* Offline support: once a team member has signed in on a device, the app keeps working with
  * no signal (basements, well houses). Sign-in pages, API calls and media are never cached,
  * and nothing is cached from a response that was redirected to the sign-in page. */
-const CACHE = "safeco-v4";
+const CACHE = "safeco-v5";
 const SHELL = [
   "css/styles.css", "js/data.js", "js/ewg-parse.js", "js/app.js",
   "assets/logo.png", "assets/system.jpg", "assets/product-sheet.jpg", "assets/icon-192.png", "assets/icon-512.png",

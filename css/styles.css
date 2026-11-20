@@ -670,3 +670,5 @@ body.login-page { min-height: 100vh; background: var(--navy-950); color: #e7f2fc
 .spin.dark { border-color: var(--line); border-top-color: var(--blue); vertical-align: -3px; }
 
 [hidden] { display: none !important; }
+.login-brand { display: block; width: 100%; max-width: 340px; height: auto; margin: 0 auto 18px; }
+.login-card { padding-top: 30px; }
