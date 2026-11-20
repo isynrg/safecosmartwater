@@ -96,8 +96,11 @@
     <!-- ============ CHAPTER 1: THE JOURNEY ============ -->
     <section class="journey" id="story" data-chapter="I · The Journey">
       <div class="journey__sticky">
-        <div class="journey__visual">
-          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3JQuD8hdgoIgFrsDKoU5JIzYObb/hf_20261120_063732_09d5d835-0864-497b-b1e3-3415c4e44299.png" alt="Water flowing from a modern faucet" loading="lazy" />
+        <div class="journey__visual" id="journeyVisual">
+          <div class="journey__img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3JQuD8hdgoIgFrsDKoU5JIzYObb/hf_20261120_063732_09d5d835-0864-497b-b1e3-3415c4e44299.png" alt="Water flowing from a modern faucet" loading="lazy" /><i class="journey__glare"></i></div>
+          <span class="journey__chip journey__chip--a">H₂O</span>
+          <span class="journey__chip journey__chip--b">+ Cl₂</span>
+          <span class="journey__chip journey__chip--c">Pb ?</span>
           <div class="journey__counter"><span id="journeyMiles">01</span><small id="journeyStage">Source water · lakes &amp; aquifers</small></div>
         </div>
       </div>
@@ -281,7 +284,7 @@
         </header>
 
         <div class="system__show">
-          <div class="system__media" data-reveal>
+          <div class="system__media" data-reveal data-tilt>
             <div class="system__glow" aria-hidden="true"></div>
             <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3JQuD8hdgoIgFrsDKoU5JIzYObb/hf_20261120_063732_efcf3f13-1ff8-44dc-9f71-bc0464ffb600.png" alt="SafeCo whole-home softener, carbon filtration tank and under-sink reverse osmosis system" loading="lazy" />
           </div>
@@ -313,12 +316,12 @@
       <div class="service__hero">
         <div class="wrap">
           <p class="eyebrow" data-reveal>Chapter VII · Our promise</p>
-          <h2 class="service__title" data-split>Skip the sale.<br /><em>Go to service.</em></h2>
+          <h2 class="service__title" id="serviceTitle" data-split>Skip the sale.<br /><em>Go to service.</em></h2>
           <p class="service__lead" data-reveal>You've heard of the three-hour kitchen-table pitch. We don't do that. SafeCo is a service company first: a trained technician tests your water, shows you the numbers, and tells you honestly what your home needs, even if the answer is <em>nothing.</em></p>
           <div class="promises">
-            <div class="promise" data-reveal><b>01</b><h3>A technician, not a closer</h3><p>The person at your door installs and services systems for a living. Real answers, no scripts.</p></div>
-            <div class="promise" data-reveal><b>02</b><h3>Your results, your decision</h3><p>We test at your sink and walk you through every number. You keep the results either way.</p></div>
-            <div class="promise" data-reveal><b>03</b><h3>We stay after the install</h3><p>Filter changes, salt, yearly check-ups and a 1-year workmanship warranty. We're a phone call away.</p></div>
+            <div class="promise" data-reveal data-tilt><b>01</b><h3>A technician, not a closer</h3><p>The person at your door installs and services systems for a living. Real answers, no scripts.</p></div>
+            <div class="promise" data-reveal data-tilt><b>02</b><h3>Your results, your decision</h3><p>We test at your sink and walk you through every number. You keep the results either way.</p></div>
+            <div class="promise" data-reveal data-tilt><b>03</b><h3>We stay after the install</h3><p>Filter changes, salt, yearly check-ups and a 1-year workmanship warranty. We're a phone call away.</p></div>
           </div>
           <div class="service__cta" data-reveal>
             <a href="#book" class="btn btn--aqua btn--lg">Book My Free Water Test</a>
@@ -451,5 +454,12 @@
   </div>
 
   <script src="main.js"></script>
+  <script type="importmap">
+    { "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    } }
+  </script>
+  <script type="module" src="scene3d.js"></script>
 </body>
 </html>

@@ -145,7 +145,7 @@ p { margin: 0; }
 @keyframes kenburns { to { transform: scale(1.02); } }
 .hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(100deg, rgba(6, 20, 35, .94) 0%, rgba(6, 20, 35, .7) 45%, rgba(6, 20, 35, .2) 100%), linear-gradient(0deg, var(--ink) 0%, transparent 30%); }
 .hero__caustics { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; mix-blend-mode: screen; opacity: .45; pointer-events: none; }
-.hero__inner { width: min(1200px, 100% - 32px); margin-inline: auto; padding: 120px 0 140px; }
+.hero__inner { position: relative; z-index: 1; width: min(1200px, 100% - 32px); margin-inline: auto; padding: 120px 0 140px; }
 .hero__title { font-size: clamp(2.9rem, 8.4vw, 7.4rem); font-weight: 800; margin: 1.2rem 0 1.4rem; max-width: 12ch; letter-spacing: -.04em; }
 .hero__title em { color: var(--aqua-2); letter-spacing: -.01em; }
 .hero__sub { max-width: 540px; font-size: clamp(1rem, 1.4vw, 1.15rem); color: rgba(232, 247, 251, .82); }
@@ -172,9 +172,16 @@ p { margin: 0; }
 /* ---------- journey ---------- */
 .journey { position: relative; display: grid; grid-template-columns: 1fr 1fr; background: var(--ink); color: var(--white); }
 .journey__sticky { position: sticky; top: 0; height: 100svh; display: grid; place-items: center; padding: 90px 4vw 40px; }
-.journey__visual { position: relative; width: min(440px, 100%); aspect-ratio: 9 / 14; border-radius: 28px; overflow: hidden; box-shadow: 0 40px 100px -30px rgba(58, 214, 224, .35); }
-.journey__visual img { width: 100%; height: 100%; object-fit: cover; background: radial-gradient(circle at 50% 30%, #12395a, #04101b); }
-.journey__counter { position: absolute; left: 20px; right: 20px; bottom: 20px; padding: 18px 20px; border-radius: 16px; background: rgba(6, 20, 35, .6); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,.1); display: grid; }
+.journey__sticky { perspective: 1400px; }
+.journey__visual { position: relative; width: min(440px, 100%); aspect-ratio: 9 / 14; transform-style: preserve-3d; will-change: transform; }
+.journey__img { position: absolute; inset: 0; border-radius: 28px; overflow: hidden; box-shadow: 0 60px 120px -30px rgba(58, 214, 224, .45), 0 0 0 1px rgba(123,234,240,.15); transform: translateZ(0); }
+.journey__img img { width: 100%; height: 100%; object-fit: cover; background: radial-gradient(circle at 50% 30%, #12395a, #04101b); transform: scale(1.12) translateY(calc((var(--jp, .5) - .5) * -6%)); }
+.journey__glare { position: absolute; inset: 0; background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.18) calc(30% + var(--jp, .5) * 40%), transparent 75%); mix-blend-mode: screen; pointer-events: none; }
+.journey__chip { position: absolute; padding: 10px 16px; border-radius: 999px; font-weight: 800; font-size: .95rem; letter-spacing: .02em; color: var(--white); background: rgba(6,20,35,.55); backdrop-filter: blur(10px); border: 1px solid rgba(123,234,240,.35); box-shadow: 0 20px 40px -10px rgba(0,0,0,.6); }
+.journey__chip--a { top: 12%; left: -14%; transform: translateZ(120px); color: var(--aqua-2); }
+.journey__chip--b { top: 38%; right: -16%; transform: translateZ(180px); color: #b8f36b; }
+.journey__chip--c { top: 62%; left: -10%; transform: translateZ(90px); color: #ff8f8f; }
+.journey__counter { transform: translateZ(70px); position: absolute; left: 20px; right: 20px; bottom: 20px; padding: 18px 20px; border-radius: 16px; background: rgba(6, 20, 35, .6); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,.1); display: grid; }
 .journey__counter span { font-size: 3rem; font-weight: 800; letter-spacing: -.04em; line-height: 1; color: var(--aqua-2); }
 .journey__counter small { font-size: .82rem; color: rgba(232, 247, 251, .75); }
 .journey__steps { padding: 18vh 6vw 20vh 2vw; }
@@ -245,6 +252,31 @@ p { margin: 0; }
 .freeze__meter i { display: block; height: 100%; width: 100%; background: var(--aqua); }
 .freeze__meter b { color: var(--white); font-size: .82rem; letter-spacing: .04em; }
 @media (max-width: 760px) { .freeze__meter { top: 84px; transform: none; right: 16px; padding: 10px 12px; gap: 4px 10px; } .faucet { height: 62%; } }
+
+/* 3D WebGL layers */
+.hero__gl { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; pointer-events: none; }
+.freeze__gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.has-3d .freeze__stage, .has-3d .micro, .has-3d .freeze__meter { display: none; }
+.freeze__flash { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(circle at 50% 50%, #ffffff 0%, #bff4ff 30%, rgba(58,214,224,.6) 60%, rgba(2,7,13,0) 100%); mix-blend-mode: screen; }
+.tags3d { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.tag3d { transition: opacity .35s var(--ease); }
+.has-3d .cap--low { background: rgba(2, 7, 13, .45); }
+
+/* tilt cards + glare */
+.tilt { transform-style: preserve-3d; will-change: transform; }
+.tilt::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .4s; background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255,255,255,.35), transparent 55%); mix-blend-mode: overlay; }
+.tilt:hover::after { opacity: 1; }
+.promise, .ncard { position: relative; }
+
+/* 3D reveals */
+.step[data-reveal], .ccard[data-reveal], .promise[data-reveal], .ncard[data-reveal] { transform: perspective(1000px) rotateX(22deg) translateY(60px) translateZ(-80px); transform-origin: 50% 100%; }
+.step[data-reveal].is-in, .ccard[data-reveal].is-in, .promise[data-reveal].is-in, .ncard[data-reveal].is-in { transform: none; }
+
+/* extruded headline */
+.service__title { transform-origin: 50% 100%; will-change: transform; filter: drop-shadow(0 18px 30px rgba(0,0,0,.5)) drop-shadow(0 0 40px rgba(58,214,224,.18));
+  text-shadow: 0 1px 0 #1d3b52, 0 2px 0 #18344a, 0 3px 0 #142d41, 0 4px 0 #102638, 0 5px 0 #0d2030, 0 6px 0 #0a1a28; }
+.service__title .w { padding: 0 .06em .22em 0; margin-bottom: -.14em; }
+.service__title em { text-shadow: 0 1px 0 #1b8a93, 0 2px 0 #18808a, 0 3px 0 #157680, 0 4px 0 #126c76, 0 5px 0 #0f626b, 0 6px 0 #0c5860; }
 
 /* ---------- contaminant index ---------- */
 .index { background: var(--paper); padding: 140px 0 120px; }

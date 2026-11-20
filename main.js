@@ -98,6 +98,8 @@
       url: "https://www.usgs.gov/special-topics/water-science-school/science/hardness-water" },
   ];
 
+  window.SAFECO = { CONTAMINANTS };
+
   // ---- INTRO --------------------------------------------------------------
   const intro = $("#intro");
   const endIntro = () => {
@@ -132,7 +134,7 @@
   // ---- RENDER: contaminant cards, stages, news ----------------------------
   const srcLabel = { treatment: "From treatment", pipes: "From pipes", environment: "From the environment" };
   $("#cgrid").innerHTML = CONTAMINANTS.map((c, i) => `
-    <article class="ccard" data-src="${c.src}" data-reveal style="--c:${c.color === "#e8f7fb" ? "#9fd3e6" : c.color};transition-delay:${(i % 3) * 80}ms">
+    <article class="ccard" data-src="${c.src}" data-reveal data-tilt style="--c:${c.color === "#e8f7fb" ? "#9fd3e6" : c.color};transition-delay:${(i % 3) * 80}ms">
       <div class="ccard__top"><span class="ccard__src">${srcLabel[c.src]}</span><span class="ccard__ico"><i></i></span></div>
       <h3>${c.name}</h3>
       <p>${c.what}</p>
@@ -166,7 +168,7 @@
   }, 5200);
 
   $("#newsGrid").innerHTML = NEWS.map((n, i) => `
-    <a class="ncard" href="${n.url}" target="_blank" rel="noopener" data-reveal style="transition-delay:${(i % 3) * 90}ms">
+    <a class="ncard" href="${n.url}" target="_blank" rel="noopener" data-reveal data-tilt style="transition-delay:${(i % 3) * 90}ms">
       <div class="ncard__meta"><span>${n.src}</span><span>${n.date}</span></div>
       <div><h4>${n.title}</h4><p>${n.body}</p></div>
       <span class="ncard__go">Read the source</span>
@@ -525,7 +527,11 @@
     const dt = Math.min(0.05, (now - lastT) / 1000); lastT = now;
     const t = now / 1000;
     if (heroOn && !reduceMotion) drawCaustics(t * 0.9);
-    if (freezeOn) {
+    if (freezeOn && document.body.classList.contains("has-3d")) {
+      const r = freeze.getBoundingClientRect();
+      const p3 = clamp(-r.top / (r.height - innerHeight));
+      caps.forEach((c) => c.classList.toggle("is-on", p3 >= +c.dataset.from && p3 < +c.dataset.to));
+    } else if (freezeOn) {
       updateFreeze();
       flowT += dt * (1 - f) * (reduceMotion ? 0.2 : 1);
       if (m < 0.99) drawStream(t, dt);
@@ -538,6 +544,45 @@
   addEventListener("resize", () => { measure(); onScroll(); });
   buildMicro(); measure(); onScroll();
   requestAnimationFrame(loop);
+
+  // ---- 3D TILT on cards ---------------------------------------------------
+  const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  if (fine && !reduceMotion) {
+    $$("[data-tilt]").forEach((el) => {
+      el.classList.add("tilt");
+      el.addEventListener("pointermove", (e) => {
+        if (!el.classList.contains("is-in") && el.hasAttribute("data-reveal")) return;
+        const r = el.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        el.style.transition = "transform .12s ease-out";
+        el.style.transform = `perspective(900px) rotateX(${(0.5 - y) * 12}deg) rotateY(${(x - 0.5) * 14}deg) translateZ(14px)`;
+        el.style.setProperty("--gx", x * 100 + "%"); el.style.setProperty("--gy", y * 100 + "%");
+      });
+      el.addEventListener("pointerleave", () => { el.style.transition = "transform .7s cubic-bezier(.2,.7,.1,1)"; el.style.transform = ""; });
+    });
+  }
+
+  // ---- JOURNEY 3D card + SERVICE title depth (scroll-linked) -------------
+  const jv = $("#journeyVisual"), journey = $(".journey"), sTitle = $("#serviceTitle");
+  let jmx = 0, jmy = 0;
+  addEventListener("pointermove", (e) => { jmx = e.clientX / innerWidth - 0.5; jmy = e.clientY / innerHeight - 0.5; }, { passive: true });
+  const depthLoop = () => {
+    if (!reduceMotion) {
+      if (isVisible(journey)) {
+        const r = journey.getBoundingClientRect();
+        const jp = clamp(-r.top / (r.height - innerHeight));
+        jv.style.transform = `rotateY(${lerp(-22, 22, jp) + jmx * 10}deg) rotateX(${lerp(10, -8, jp) - jmy * 8}deg)`;
+        jv.style.setProperty("--jp", jp);
+      }
+      if (isVisible(sTitle)) {
+        const r = sTitle.getBoundingClientRect();
+        const k = clamp((r.top - innerHeight * 0.15) / (innerHeight * 0.75));
+        sTitle.style.transform = `perspective(1100px) rotateX(${k * 38}deg) rotateY(${jmx * -8}deg) translateZ(${-k * 120}px)`;
+      }
+    }
+    requestAnimationFrame(depthLoop);
+  };
+  depthLoop();
 
   // hide broken images gracefully (keeps layout backgrounds)
   $$("img").forEach((img) => img.addEventListener("error", () => (img.style.visibility = "hidden")));
