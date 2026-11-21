@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SafeCo SmartWater | Better Water. Better Living.</title>
+  <meta name="description" content="See what's really in your tap water. SafeCo SmartWater Systems tests your water for free, then installs and services whole-home filtration across Dallas–Fort Worth. Skip the sale, go to service." />
+  <meta name="theme-color" content="#061423" />
+  <meta property="og:title" content="SafeCo SmartWater | What's really in your water?" />
+  <meta property="og:description" content="Free in-home water test. Whole-home filtration installed and serviced by SafeCo SmartWater Systems." />
+  <meta property="og:image" content="img/a51-42f0.webp" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 4C22 18 12 30 12 40a20 20 0 0 0 40 0C52 30 42 18 32 4z' fill='%233ad6e0'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/smartwater/styles.css" />
+</head>
+<body class="is-loading">
+
+  <!-- ============ INTRO / PRELOADER ============ -->
+  <div class="intro" id="intro" aria-hidden="true">
+    <div class="intro__drop"></div>
+    <div class="intro__ripple"></div>
+    <div class="intro__ripple intro__ripple--2"></div>
+    <div class="intro__ripple intro__ripple--3"></div>
+    <div class="intro__text">
+      <span class="intro__brand">SafeCo SmartWater</span>
+      <span class="intro__line">Every glass tells a story.</span>
+    </div>
+  </div>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <a href="#top" class="nav__logo" aria-label="SafeCo SmartWater home">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 4C22 18 12 30 12 40a20 20 0 0 0 40 0C52 30 42 18 32 4z" /></svg>
+      <span>SafeCo <em>SmartWater</em></span>
+    </a>
+    <nav class="nav__links" aria-label="Main">
+      <a href="#story">The Story</a>
+      <a href="#contaminants">Contaminants</a>
+      <a href="#lookup">Check Your Water</a>
+      <a href="#system">The System</a>
+      <a href="#service">Service</a>
+      <a href="/">SafeCo Home</a>
+    </nav>
+    <div class="nav__actions">
+      <a class="nav__phone" href="tel:+19724722949">(972) 472-2949</a>
+      <a class="btn btn--aqua btn--sm" href="#book">Free Water Test</a>
+    </div>
+  </header>
+
+  <!-- story progress rail -->
+  <aside class="rail" aria-hidden="true">
+    <div class="rail__track"><div class="rail__fill" id="railFill"></div></div>
+    <div class="rail__label" id="railLabel">Prologue</div>
+  </aside>
+
+  <main id="top">
+
+    <!-- ============ HERO ============ -->
+    <section class="hero" data-chapter="Prologue">
+      <div class="hero__media">
+        <img src="/smartwater/img/a51-42f0.webp" alt="Glass being filled at a kitchen faucet in morning light" fetchpriority="high" />
+      </div>
+      <canvas class="hero__caustics" id="caustics" aria-hidden="true"></canvas>
+      <div class="hero__inner">
+        <p class="eyebrow" data-reveal>Dallas–Fort Worth · Whole-Home Water</p>
+        <h1 class="hero__title" data-split>It looks clean.<br /><em>That's the problem.</em></h1>
+        <p class="hero__sub" data-reveal>The water in your glass traveled miles through treatment plants and aging pipes before it reached you. Scroll to see what it picked up along the way, and how SafeCo stops it at your front door.</p>
+        <div class="hero__ctas" data-reveal>
+          <a href="#book" class="btn btn--aqua">Book My Free Water Test</a>
+          <a href="#lookup" class="btn btn--ghost">Check My ZIP Code</a>
+        </div>
+      </div>
+      <a href="#story" class="scrollcue" aria-label="Scroll to begin the story">
+        <span>Scroll to begin</span>
+        <i></i>
+      </a>
+    </section>
+
+    <!-- urgency ticker -->
+    <div class="ticker" aria-label="Announcements">
+      <div class="ticker__track">
+        <span>Free in-home water tests now booking across DFW</span><span>•</span>
+        <span>Results in about 30 minutes, at your kitchen sink</span><span>•</span>
+        <span>No sales pitch. A technician, not a salesperson.</span><span>•</span>
+        <span>Installs typically completed in 3–5 hours</span><span>•</span>
+        <span>1-year workmanship warranty on every install</span><span>•</span>
+        <span>Free in-home water tests now booking across DFW</span><span>•</span>
+        <span>Results in about 30 minutes, at your kitchen sink</span><span>•</span>
+        <span>No sales pitch. A technician, not a salesperson.</span><span>•</span>
+        <span>Installs typically completed in 3–5 hours</span><span>•</span>
+        <span>1-year workmanship warranty on every install</span><span>•</span>
+      </div>
+    </div>
+
+    <!-- ============ CHAPTER 1: THE JOURNEY ============ -->
+    <section class="journey" id="story" data-chapter="I · The Journey">
+      <div class="journey__sticky">
+        <div class="journey__visual" id="journeyVisual">
+          <div class="journey__img"><img src="/smartwater/img/864-497b.webp" alt="Water flowing from a modern faucet" loading="lazy" /><i class="journey__glare"></i></div>
+          <span class="journey__chip journey__chip--a">H₂O</span>
+          <span class="journey__chip journey__chip--b">+ Cl₂</span>
+          <span class="journey__chip journey__chip--c">Pb ?</span>
+          <div class="journey__counter"><span id="journeyMiles">01</span><small id="journeyStage">Source water · lakes &amp; aquifers</small></div>
+        </div>
+      </div>
+      <div class="journey__steps">
+        <header class="chapter-head" data-reveal>
+          <span class="chapter-num">Chapter I</span>
+          <h2>The long way <em>to your glass.</em></h2>
+        </header>
+        <article class="step" data-reveal data-n="01" data-stage="Source water · lakes &amp; aquifers">
+          <span class="step__n">01</span>
+          <h3>It starts in a lake or an aquifer.</h3>
+          <p>Rain runs off roads, farms and rooftops into the reservoirs that supply North Texas. Along the way it collects fertilizer runoff, industrial residue and natural minerals like calcium and magnesium.</p>
+        </article>
+        <article class="step" data-reveal data-n="02" data-stage="Treatment plant · chlorine added">
+          <span class="step__n">02</span>
+          <h3>The treatment plant makes it legal.</h3>
+          <p>Cities add chlorine or chloramine to kill bacteria, which is essential. But those disinfectants react with organic matter and create byproducts like <strong>TTHMs</strong> and <strong>haloacetic acids</strong>. Legal limits for many of these were set decades ago.</p>
+        </article>
+        <article class="step" data-reveal data-n="03" data-stage="Miles of aging water mains">
+          <span class="step__n">03</span>
+          <h3>Then it travels miles of aging pipe.</h3>
+          <p>Water mains across the country are decades old. Corrosion, sediment and, in older neighborhoods, lead service lines can add what the treatment plant just took out.</p>
+        </article>
+        <article class="step" data-reveal data-n="04" data-stage="Your kitchen tap · untested">
+          <span class="step__n">04</span>
+          <h3>Finally, it reaches your family.</h3>
+          <p>Into the coffee maker. The baby bottle. The shower your kids stand in every night. Nobody tests it again after it leaves the plant. <strong>Unless you do.</strong></p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ CHAPTER 2: FREEZE + ZOOM ============ -->
+    <section class="freeze" id="freeze" data-chapter="II · A Closer Look">
+      <div class="freeze__sticky">
+        <div class="freeze__stage" id="freezeStage">
+          <svg class="faucet" id="faucet" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMin meet" aria-hidden="true">
+            <defs>
+              <linearGradient id="chrome" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0" stop-color="#5b6b78" />
+                <stop offset=".22" stop-color="#e9f2f7" />
+                <stop offset=".45" stop-color="#9fb1bd" />
+                <stop offset=".7" stop-color="#f8fcff" />
+                <stop offset="1" stop-color="#4c5a66" />
+              </linearGradient>
+              <linearGradient id="chromeV" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0" stop-color="#f4fbff" />
+                <stop offset=".5" stop-color="#8fa2af" />
+                <stop offset="1" stop-color="#3f4c57" />
+              </linearGradient>
+            </defs>
+            <!-- column -->
+            <rect x="248" y="420" width="64" height="600" rx="10" fill="url(#chrome)" />
+            <!-- handle -->
+            <rect x="300" y="520" width="120" height="22" rx="11" fill="url(#chromeV)" />
+            <!-- gooseneck -->
+            <path d="M280 440 V300 C280 150 520 150 520 290" fill="none" stroke="url(#chrome)" stroke-width="56" stroke-linecap="round" />
+            <path d="M280 440 V300 C280 150 520 150 520 290" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="6" stroke-linecap="round" transform="translate(-12 0)" />
+            <!-- nozzle -->
+            <rect x="490" y="282" width="60" height="44" rx="8" fill="url(#chrome)" />
+            <rect x="496" y="322" width="48" height="8" rx="3" fill="#25313b" />
+            <circle id="nozzle" cx="520" cy="330" r="1" fill="none" />
+          </svg>
+          <canvas id="streamCanvas" class="freeze__stream"></canvas>
+          <div class="freeze__frost" id="frost"></div>
+        </div>
+
+        <div class="micro" id="micro">
+          <canvas id="microCanvas"></canvas>
+          <div class="micro__lens"></div>
+          <div class="micro__tags" id="microTags"></div>
+          <div class="micro__scale"><span></span>1 µm</div>
+        </div>
+
+        <div class="freeze__captions">
+          <p class="cap" data-from="0" data-to=".16"><span class="eyebrow">Chapter II</span>This is the water your family drinks every day.</p>
+          <p class="cap" data-from=".16" data-to=".36">Let's stop time <em>for a moment.</em></p>
+          <p class="cap" data-from=".36" data-to=".52">Now look closer.</p>
+          <p class="cap cap--low" data-from=".52" data-to=".93">Tap water from many U.S. systems contains dozens of contaminants. <em>Most are invisible, tasteless and odorless.</em></p>
+          <p class="cap cap--low" data-from=".93" data-to="1.01"><em>Legal</em> doesn't always mean <em>safe.</em> <a href="#contaminants" class="link-arrow">Meet what's in the glass</a></p>
+        </div>
+        <div class="freeze__meter" aria-hidden="true">
+          <span>Flow</span><div><i id="flowBar"></i></div>
+          <span>Temp</span><b id="tempRead">68°F</b>
+          <span>Zoom</span><b id="zoomRead">1×</b>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CHAPTER 3: CONTAMINANT INDEX ============ -->
+    <section class="index" id="contaminants" data-chapter="III · What's Inside">
+      <div class="wrap">
+        <header class="chapter-head chapter-head--center" data-reveal>
+          <span class="chapter-num">Chapter III</span>
+          <h2>Meet what's <em>in the glass.</em></h2>
+          <p>These are among the contaminants most often detected in U.S. tap water. "Legal limit" is what the EPA allows. The EWG health guideline is the level that scientific research suggests poses minimal risk. The gap between them is the story nobody tells you.</p>
+        </header>
+        <div class="filters" data-reveal role="tablist" aria-label="Filter contaminants">
+          <button class="chip is-on" data-filter="all">All</button>
+          <button class="chip" data-filter="treatment">From treatment</button>
+          <button class="chip" data-filter="pipes">From pipes</button>
+          <button class="chip" data-filter="environment">From the environment</button>
+        </div>
+        <div class="cgrid" id="cgrid"></div>
+        <p class="fineprint" data-reveal>Limits shown are federal Maximum Contaminant Levels (MCLs) or action levels where they exist, alongside Environmental Working Group (EWG) health guidelines. Detection varies by utility and by home. Your free SafeCo test and the EWG database below show what applies to <em>your</em> address.</p>
+      </div>
+    </section>
+
+    <!-- ============ CHAPTER 4: YOUR HOME ============ -->
+    <section class="home" data-chapter="IV · Your Home">
+      <div class="wrap home__grid">
+        <div class="home__media" data-reveal>
+          <img src="/smartwater/img/251-4918.webp" alt="Hard water scale and staining on a chrome fixture" loading="lazy" data-parallax="-0.08" />
+          <span class="home__badge">This is hard water.<br />It's inside your pipes too.</span>
+        </div>
+        <div class="home__copy">
+          <header class="chapter-head" data-reveal>
+            <span class="chapter-num">Chapter IV</span>
+            <h2>What you can't see, <em>you can feel.</em></h2>
+          </header>
+          <p data-reveal>North Texas water is naturally hard. The same white crust on your showerhead is forming inside your water heater, dishwasher, washing machine and every pipe in the walls.</p>
+          <ul class="symptoms" data-reveal>
+            <li><b>Spots &amp; film</b> on glasses and shower doors</li>
+            <li><b>Dry, itchy skin</b> and dull, brittle hair</li>
+            <li><b>Chlorine smell</b> or "pool" taste from the tap</li>
+            <li><b>Shorter life</b> for water heaters and appliances</li>
+            <li><b>Higher bills</b> as scale insulates heating elements</li>
+          </ul>
+
+          <div class="calc" data-reveal>
+            <div class="calc__head">
+              <h3>How much untreated water flows through your home?</h3>
+              <label for="people">People in your home: <output id="peopleOut">4</output></label>
+              <input type="range" id="people" min="1" max="8" value="4" />
+            </div>
+            <div class="calc__out">
+              <div><span id="galYear">119,720</span><small>gallons a year through your pipes</small></div>
+              <div><span id="glassYear">5,840</span><small>glasses of tap water your family drinks</small></div>
+              <div><span id="showerYear">1,460</span><small>showers in unfiltered water</small></div>
+            </div>
+            <p class="calc__note">Based on EPA WaterSense average household use (~82 gal/person/day), 4 glasses/day and 1 shower/day per person.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CHAPTER 5: EWG LOOKUP ============ -->
+    <section class="lookup" id="lookup" data-chapter="V · Your Water">
+      <div class="lookup__bg" aria-hidden="true"></div>
+      <div class="wrap lookup__inner">
+        <header class="chapter-head chapter-head--center" data-reveal>
+          <span class="chapter-num">Chapter V</span>
+          <h2>Now look up <em>your</em> water.</h2>
+          <p>The Environmental Working Group publishes test results reported by utilities nationwide. Enter your ZIP code to see what's been detected in your local supply, and how it compares to health guidelines.</p>
+        </header>
+        <form class="zip" id="zipForm" data-reveal>
+          <label for="zip" class="sr-only">ZIP code</label>
+          <div class="zip__field">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8 7 5 10.5 5 14a7 7 0 0 0 14 0c0-3.5-3-7-7-12z"/></svg>
+            <input id="zip" name="zip" inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{5}" maxlength="5" placeholder="Enter your ZIP code" required />
+          </div>
+          <button type="submit" class="btn btn--aqua">See What's in My Water</button>
+        </form>
+        <p class="zip__msg" id="zipMsg" role="status"></p>
+        <div class="lookup__alt" data-reveal>
+          <a class="btn btn--ghost" href="https://www.ewg.org/tapwater/" target="_blank" rel="noopener">Browse the EWG Tap Water Database ↗</a>
+        </div>
+        <div class="lookup__then" data-reveal>
+          <p><strong>Seen your report?</strong> Utility data is measured at the plant, not at your faucet. A SafeCo technician can test the water <em>at your kitchen sink</em>, for free.</p>
+          <a href="#book" class="btn btn--light">Test My Actual Tap, Free</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CHAPTER 6: THE SYSTEM ============ -->
+    <section class="system" id="system" data-chapter="VI · The Solution">
+      <div class="wrap">
+        <header class="chapter-head chapter-head--center" data-reveal>
+          <span class="chapter-num">Chapter VI</span>
+          <h2>One system. <em>Every tap.</em></h2>
+          <p>The SafeCo Complete Home Water Filtration System treats water once, where it enters your home, then polishes your drinking water at the kitchen sink.</p>
+        </header>
+
+        <div class="system__show">
+          <div class="system__media" data-reveal data-tilt>
+            <div class="system__glow" aria-hidden="true"></div>
+            <img src="/smartwater/img/ff8-44dc.webp" alt="SafeCo whole-home softener, carbon filtration tank and under-sink reverse osmosis system" loading="lazy" />
+          </div>
+
+          <div class="stages" data-reveal>
+            <div class="stages__tabs" role="tablist" aria-label="Filtration stages">
+              <button role="tab" class="stab is-on" aria-selected="true" data-stage="0"><i>1</i>Softener</button>
+              <button role="tab" class="stab" aria-selected="false" data-stage="1"><i>2</i>Carbon</button>
+              <button role="tab" class="stab" aria-selected="false" data-stage="2"><i>3</i>Reverse Osmosis</button>
+              <button role="tab" class="stab" aria-selected="false" data-stage="3"><i>4</i>Remineralization</button>
+            </div>
+            <div class="stages__panel" id="stagePanel" role="tabpanel"></div>
+          </div>
+        </div>
+
+        <div class="specs" data-reveal>
+          <div><b>48,000</b><span>grain softener capacity</span></div>
+          <div><b>27 GPM</b><span>system flow rate</span></div>
+          <div><b>15 lbs</b><span>coconut-shell activated carbon</span></div>
+          <div><b>50 lbs</b><span>high-capacity resin</span></div>
+          <div><b>Digital</b><span>SafeCo ProValve control valve</span></div>
+          <div><b>1"</b><span>integrated bypass</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CHAPTER 7: SKIP THE SALE ============ -->
+    <section class="service" id="service" data-chapter="VII · Skip the Sale">
+      <div class="service__hero">
+        <div class="wrap">
+          <p class="eyebrow" data-reveal>Chapter VII · Our promise</p>
+          <h2 class="service__title" id="serviceTitle" data-split>Skip the sale.<br /><em>Go to service.</em></h2>
+          <p class="service__lead" data-reveal>You've heard of the three-hour kitchen-table pitch. We don't do that. SafeCo is a service company first: a trained technician tests your water, shows you the numbers, and tells you honestly what your home needs, even if the answer is <em>nothing.</em></p>
+          <div class="promises">
+            <div class="promise" data-reveal data-tilt><b>01</b><h3>A technician, not a closer</h3><p>The person at your door installs and services systems for a living. Real answers, no scripts.</p></div>
+            <div class="promise" data-reveal data-tilt><b>02</b><h3>Your results, your decision</h3><p>We test at your sink and walk you through every number. You keep the results either way.</p></div>
+            <div class="promise" data-reveal data-tilt><b>03</b><h3>We stay after the install</h3><p>Filter changes, salt, yearly check-ups and a 1-year workmanship warranty. We're a phone call away.</p></div>
+          </div>
+          <div class="service__cta" data-reveal>
+            <a href="#book" class="btn btn--aqua btn--lg">Book My Free Water Test</a>
+            <a href="tel:+19724722949" class="btn btn--ghost btn--lg">Call (972) 472-2949</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="wrap process">
+        <h3 class="process__title" data-reveal>What happens after you book</h3>
+        <ol class="timeline">
+          <li data-reveal><span>Day 0</span><h4>Free water test</h4><p>A technician tests hardness, chlorine and dissolved solids right at your tap.</p></li>
+          <li data-reveal><span>1–2 business days</span><h4>Scheduling call</h4><p>A coordinator confirms your install window and reviews your home's layout.</p></li>
+          <li data-reveal><span>Install day · 3–5 hrs</span><h4>Professional installation</h4><p>Softener, carbon, RO and remineralization, pressure and leak tested before we leave.</p></li>
+          <li data-reveal><span>End of install</span><h4>Startup &amp; orientation</h4><p>We calibrate the valve to your hardness and household size, then show you everything.</p></li>
+          <li data-reveal><span>For years</span><h4>Ongoing service</h4><p>Filter reminders, yearly check-ups and a 1-year workmanship warranty.</p></li>
+        </ol>
+      </div>
+
+      <!-- news -->
+      <div class="wrap news" id="news">
+        <header class="news__head" data-reveal>
+          <h3>In the news: <em>what's changing about your water</em></h3>
+          <p>Read it from the source. These are public reports from federal agencies and independent researchers.</p>
+        </header>
+        <div class="news__grid" id="newsGrid"></div>
+      </div>
+    </section>
+
+    <!-- ============ CHAPTER 8: BOOK ============ -->
+    <section class="book" id="book" data-chapter="VIII · Your Move">
+      <div class="book__media" aria-hidden="true">
+        <img src="/smartwater/img/16e-445d.webp" alt="" loading="lazy" data-parallax="0.06" />
+      </div>
+      <div class="wrap book__grid">
+        <div class="book__copy">
+          <p class="eyebrow" data-reveal>Chapter VIII · The ending is yours</p>
+          <h2 data-reveal>Every day you wait is <em>another day of the same water.</em></h2>
+          <p data-reveal>Your family will drink thousands of glasses of tap water this year. Find out what's in them. The test is free, takes about 30 minutes, and there's no obligation.</p>
+          <ul class="book__list" data-reveal>
+            <li>Hardness, chlorine &amp; TDS tested at your sink</li>
+            <li>Plain-English results you keep</li>
+            <li>Honest recommendation, zero pressure</li>
+          </ul>
+          <div class="book__tech" data-reveal>
+            <img src="/smartwater/img/c8a-41fc.webp" alt="SafeCo technician installing a water softener" loading="lazy" />
+            <p><b>Trained SafeCo installers</b><br />Irving, TX · Serving the DFW Metroplex</p>
+          </div>
+        </div>
+
+        <form class="form" id="bookForm" novalidate data-reveal>
+          <div class="form__head">
+            <h3>Book your free water test</h3>
+            <p class="form__slots"><i></i>Test appointments available this week</p>
+          </div>
+          <div class="form__row">
+            <label>First &amp; last name<input name="name" autocomplete="name" required /></label>
+          </div>
+          <div class="form__row form__row--2">
+            <label>Phone<input name="phone" type="tel" autocomplete="tel" required /></label>
+            <label>ZIP code<input name="zip" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" autocomplete="postal-code" required /></label>
+          </div>
+          <div class="form__row">
+            <label><span>Email <span class="opt">(optional)</span></span><input name="email" type="email" autocomplete="email" /></label>
+          </div>
+          <div class="form__row">
+            <label>What concerns you most?
+              <select name="concern">
+                <option>Not sure. I just want to know what's in it</option>
+                <option>Hard water, spots &amp; scale</option>
+                <option>Taste or chlorine smell</option>
+                <option>Contaminants (lead, PFAS, etc.)</option>
+                <option>Dry skin &amp; hair</option>
+                <option>I already have a system that needs service</option>
+              </select>
+            </label>
+          </div>
+          <fieldset class="form__row form__times">
+            <legend>Best time to reach you</legend>
+            <label class="pill"><input type="radio" name="time" value="Morning" checked /><span>Morning</span></label>
+            <label class="pill"><input type="radio" name="time" value="Afternoon" /><span>Afternoon</span></label>
+            <label class="pill"><input type="radio" name="time" value="Evening" /><span>Evening</span></label>
+          </fieldset>
+          <button type="submit" class="btn btn--aqua btn--block btn--lg">Claim My Free Water Test</button>
+          <p class="form__legal">By submitting, you agree SafeCo SmartWater Systems may call or text you about your appointment. No obligation. We never sell your information.</p>
+          <div class="form__done" id="formDone" hidden>
+            <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 4C22 18 12 30 12 40a20 20 0 0 0 40 0C52 30 42 18 32 4z"/><path d="M22 40l7 7 14-15" fill="none" stroke="#061423" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <h3>You're on the list.</h3>
+            <p id="doneMsg">A SafeCo coordinator will reach out to schedule your free test. Want it sooner?</p>
+            <a href="tel:+19724722949" class="btn btn--aqua">Call (972) 472-2949 now</a>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="wrap footer__grid">
+      <div>
+        <a href="#top" class="nav__logo nav__logo--lg">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 4C22 18 12 30 12 40a20 20 0 0 0 40 0C52 30 42 18 32 4z" /></svg>
+          <span>SafeCo <em>SmartWater</em></span>
+        </a>
+        <p class="footer__tag">Better water. Better living.<br />Quality. Integrity. Service.</p>
+      </div>
+      <div>
+        <h4>Visit</h4>
+        <p>2300 Valley View Ln<br />Irving, TX 75062</p>
+      </div>
+      <div>
+        <h4>Call</h4>
+        <p><a href="tel:+19724722949">(972) 472-2949</a><br />Mon–Fri · 8:00 AM–5:00 PM CST</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <p><a href="#contaminants">Contaminant index</a><br /><a href="#lookup">Check your ZIP</a><br /><a href="/">SafeCo home</a></p>
+      </div>
+    </div>
+    <div class="wrap footer__base">
+      <span>© <span id="yr"></span> SafeCo SmartWater Systems. All rights reserved.</span>
+      <span>Contaminant data references the EPA and the EWG Tap Water Database. Individual results vary; filtration performance depends on your water chemistry.</span>
+    </div>
+  </footer>
+
+  <!-- mobile sticky CTA -->
+  <div class="mcta" id="mcta">
+    <a href="tel:+19724722949" class="btn btn--ghost btn--sm">Call</a>
+    <a href="#book" class="btn btn--aqua btn--sm">Free Water Test</a>
+  </div>
+
+  <script src="/smartwater/main.js"></script>
+  <script type="importmap">
+    { "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    } }
+  </script>
+  <script type="module" src="/smartwater/scene3d.js"></script>
+</body>
+</html>
