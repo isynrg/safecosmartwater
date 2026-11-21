@@ -3,13 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Safeco Pro — From Sale to Service | HVAC, Insulation, Solar Attic Fans & Water Treatment</title>
-  <meta name="description" content="Safeco Pro is the installation partner behind DFW and Oklahoma home-service businesses. HVAC, insulation, solar attic fans and water treatment — from sale to service, with timeline photos, materials and warranties on every job." />
+  <title>SafeCo Pro — From Sale to Service | HVAC, Insulation, Solar Attic Fans & Water Treatment</title>
+  <meta name="description" content="SafeCo Pro is the installation partner behind DFW and Oklahoma home-service businesses. HVAC, insulation, solar attic fans and water treatment — from sale to service, with timeline photos, materials and warranties on every job." />
   <meta name="theme-color" content="#000000" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="preload" as="image" href="assets/img/hero.webp" />
+  <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -18,17 +20,19 @@
   <!-- Navigation -->
   <header class="nav" id="nav">
     <div class="nav__inner">
-      <a href="#top" class="brand" aria-label="Safeco Pro home">
-        <span class="brand__mark" aria-hidden="true"></span>
-        Safeco<span class="brand__pro">Pro</span>
+      <a href="#top" class="brand" aria-label="SafeCo Pro home">
+        <img class="brand__mark" src="assets/img/safeco-mark.png" alt="" width="26" height="26" />
+        SafeCo<span class="brand__pro">Pro</span>
       </a>
       <nav class="nav__links" aria-label="Primary">
         <a href="#services">Services</a>
         <a href="#process">How it works</a>
+        <a href="/smartwater">SmartWater</a>
         <a href="#software">Software</a>
         <a href="#area">Service area</a>
         <a href="#partners">Partners</a>
       </nav>
+      <a href="tel:+19724722949" class="nav__phone">(972) 472-2949</a>
       <a href="#contact" class="btn btn--small">Get started</a>
       <button class="nav__toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
     </div>
@@ -100,6 +104,7 @@
             <div class="tile__copy">
               <h3>Water treatment</h3>
               <p>Whole-home filtration and softening. Cleaner water from every tap, softer on every fixture.</p>
+              <a class="link-arrow tile__link" href="/smartwater">Explore SafeCo SmartWater</a>
             </div>
             <img src="assets/img/water.webp" alt="Whole-home water filtration and softener system" loading="lazy" />
           </article>
@@ -276,6 +281,11 @@
         <div class="contact__copy">
           <h2 class="section__title reveal">Let's get to work.</h2>
           <p class="lead reveal">Tell us what you need. We'll get back to you within one business day.</p>
+          <div class="contact__direct reveal">
+            <a href="tel:+19724722949"><small>Call</small>(972) 472-2949</a>
+            <p><small>Visit</small>2300 Valley View Ln, Irving, TX 75062</p>
+            <p><small>Hours</small>Mon–Fri · 8:00 AM–5:00 PM CST</p>
+          </div>
         </div>
         <form class="form reveal" id="contact-form" novalidate>
           <div class="seg" role="radiogroup" aria-label="I'm interested in">
@@ -298,14 +308,15 @@
 
   <footer class="footer">
     <div class="container footer__inner">
-      <a href="#top" class="brand"><span class="brand__mark" aria-hidden="true"></span>Safeco<span class="brand__pro">Pro</span></a>
+      <a href="#top" class="brand"><img class="brand__mark" src="assets/img/safeco-mark.png" alt="" width="26" height="26" />SafeCo<span class="brand__pro">Pro</span></a>
       <nav aria-label="Footer">
         <a href="#services">Services</a>
         <a href="#process">How it works</a>
         <a href="https://floquote.pro" target="_blank" rel="noopener">FloQuote.pro</a>
+        <a href="/smartwater">SmartWater</a>
         <a href="#partners">Dealers &amp; Affiliates</a>
       </nav>
-      <p class="footer__fine">Dallas–Fort Worth, TX · Serving Oklahoma<br />© <span id="year"></span> Safeco Pro. All rights reserved.</p>
+      <p class="footer__fine">2300 Valley View Ln, Irving, TX 75062 · <a href="tel:+19724722949">(972) 472-2949</a> · Serving DFW &amp; Oklahoma<br />© <span id="year"></span> SafeCo Pro. All rights reserved.</p>
     </div>
   </footer>
 
